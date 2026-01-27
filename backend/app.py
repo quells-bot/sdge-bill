@@ -1,15 +1,17 @@
 #!/usr/bin/env python3
 """Simple Flask backend for tracking utility bills."""
 
+import os
 import sqlite3
-from datetime import datetime
-from flask import Flask, jsonify, request, g
+from flask import Flask, jsonify, request, g, send_from_directory
 from flask_cors import CORS
 
-app = Flask(__name__)
-CORS(app)
+# Configuration
+DATABASE = os.environ.get("DATABASE_PATH", "bills.db")
+STATIC_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static")
 
-DATABASE = "bills.db"
+app = Flask(__name__, static_folder=STATIC_FOLDER, static_url_path="")
+CORS(app)
 
 
 def get_db():
@@ -58,6 +60,8 @@ def row_to_dict(row):
         return None
     return dict(row)
 
+
+# API Routes
 
 @app.route("/api/bills", methods=["GET"])
 def get_bills():
@@ -186,6 +190,19 @@ def health_check():
     return jsonify({"status": "ok"})
 
 
+# Static file serving for production
+
+@app.route("/", defaults={"path": ""})
+@app.route("/<path:path>")
+def serve_static(path):
+    """Serve static files and handle SPA routing."""
+    if path and os.path.exists(os.path.join(app.static_folder, path)):
+        return send_from_directory(app.static_folder, path)
+    return send_from_directory(app.static_folder, "index.html")
+
+
+# Initialize database on import (for gunicorn)
+init_db()
+
 if __name__ == "__main__":
-    init_db()
     app.run(host="0.0.0.0", port=5000, debug=True)
