@@ -281,6 +281,46 @@ def edit_bill(bill_id):
                          bill=bill)
 
 
+@app.route("/history")
+def history():
+    """Render electricity usage history page."""
+    db = get_db()
+    # Get last 13 months, then reverse to show chronologically
+    cursor = db.execute("""
+        SELECT date, electricity_on_peak_kwh, electricity_off_peak_kwh,
+               electricity_super_off_peak_kwh, gas_cost, electricity_delivery_cost,
+               electricity_generation_cost, other_cost
+        FROM bills
+        ORDER BY date DESC
+        LIMIT 13
+    """)
+    bills = [row_to_dict(row) for row in cursor.fetchall()]
+    # Reverse to show chronologically (oldest to newest)
+    bills.reverse()
+
+    # Prepare data for charts
+    dates = [bill['date'] for bill in bills]
+    on_peak = [bill['electricity_on_peak_kwh'] or 0 for bill in bills]
+    off_peak = [bill['electricity_off_peak_kwh'] or 0 for bill in bills]
+    super_off_peak = [bill['electricity_super_off_peak_kwh'] or 0 for bill in bills]
+
+    gas_cost = [bill['gas_cost'] or 0 for bill in bills]
+    el_delivery_cost = [bill['electricity_delivery_cost'] or 0 for bill in bills]
+    el_generation_cost = [bill['electricity_generation_cost'] or 0 for bill in bills]
+    other_cost = [bill['other_cost'] or 0 for bill in bills]
+
+    return render_template('history.html',
+                         bills=bills,
+                         dates=dates,
+                         on_peak=on_peak,
+                         off_peak=off_peak,
+                         super_off_peak=super_off_peak,
+                         gas_cost=gas_cost,
+                         el_delivery_cost=el_delivery_cost,
+                         el_generation_cost=el_generation_cost,
+                         other_cost=other_cost)
+
+
 # Form Submission Routes
 
 @app.route("/bills/create", methods=["POST"])

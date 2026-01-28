@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+
+{% block title %}Usage History - Utility Bills Tracker{% endblock %}
+
+{% block content %}
+<nav>
+  <ul>
+    <li><strong>Utility Bills</strong></li>
+  </ul>
+  <ul>
+    <li><a href="/">Bills List</a></li>
+    <li><a href="/add">Add Bill</a></li>
+  </ul>
+</nav>
+
+{% if bills|length == 0 %}
+  <article>
+    <p>No usage data available yet.</p>
+  </article>
+{% else %}
+  <div id="electricity-chart" style="width: 100%; height: 500px;"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+  <script>
+    var chartDom = document.getElementById('electricity-chart');
+    var myChart = echarts.init(chartDom);
+
+    var option = {
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+          type: 'shadow'
+        }
+      },
+      legend: {
+        data: ['On-Peak', 'Off-Peak', 'Super Off-Peak'],
+        bottom: 0
+      },
+      grid: {
+        left: '3%',
+        right: '4%',
+        bottom: '10%',
+        containLabel: true
+      },
+      xAxis: {
+        type: 'category',
+        data: {{ dates|tojson }}
+      },
+      yAxis: {
+        type: 'value',
+        name: 'kWh'
+      },
+      series: [
+        {
+          name: 'On-Peak',
+          type: 'bar',
+          stack: 'total',
+          emphasis: {
+            focus: 'series'
+          },
+          data: {{ on_peak|tojson }}
+        },
+        {
+          name: 'Off-Peak',
+          type: 'bar',
+          stack: 'total',
+          emphasis: {
+            focus: 'series'
+          },
+          data: {{ off_peak|tojson }}
+        },
+        {
+          name: 'Super Off-Peak',
+          type: 'bar',
+          stack: 'total',
+          emphasis: {
+            focus: 'series'
+          },
+          data: {{ super_off_peak|tojson }}
+        }
+      ]
+    };
+
+    myChart.setOption(option);
+
+    // Responsive resize
+    window.addEventListener('resize', function() {
+      myChart.resize();
+    });
+  </script>
+
+  <div id="cost-chart" style="width: 100%; height: 500px; margin-top: 40px;"></div>
+
+  <script>
+    var costChartDom = document.getElementById('cost-chart');
+    var costChart = echarts.init(costChartDom);
+
+    var costOption = {
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+          type: 'shadow'
+        }
+      },
+      legend: {
+        data: ['Gas', 'Electricity Delivery', 'Electricity Generation', 'Other'],
+        bottom: 0
+      },
+      grid: {
+        left: '3%',
+        right: '4%',
+        bottom: '10%',
+        containLabel: true
+      },
+      xAxis: {
+        type: 'category',
+        data: {{ dates|tojson }}
+      },
+      yAxis: {
+        type: 'value',
+        name: '$'
+      },
+      series: [
+        {
+          name: 'Gas',
+          type: 'bar',
+          stack: 'total',
+          emphasis: {
+            focus: 'series'
+          },
+          data: {{ gas_cost|tojson }}
+        },
+        {
+          name: 'Electricity Delivery',
+          type: 'bar',
+          stack: 'total',
+          emphasis: {
+            focus: 'series'
+          },
+          data: {{ el_delivery_cost|tojson }}
+        },
+        {
+          name: 'Electricity Generation',
+          type: 'bar',
+          stack: 'total',
+          emphasis: {
+            focus: 'series'
+          },
+          data: {{ el_generation_cost|tojson }}
+        },
+        {
+          name: 'Other',
+          type: 'bar',
+          stack: 'total',
+          emphasis: {
+            focus: 'series'
+          },
+          data: {{ other_cost|tojson }}
+        }
+      ]
+    };
+
+    costChart.setOption(costOption);
+
+    // Responsive resize
+    window.addEventListener('resize', function() {
+      costChart.resize();
+    });
+  </script>
+{% endif %}
+{% endblock %}
