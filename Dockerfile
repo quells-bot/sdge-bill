@@ -9,7 +9,6 @@ RUN pip install --no-cache-dir -r requirements.txt gunicorn
 # Copy application
 COPY app.py ./
 COPY templates ./templates
-COPY static ./static
 
 # Create directory for database (can be mounted as volume)
 RUN mkdir -p /data

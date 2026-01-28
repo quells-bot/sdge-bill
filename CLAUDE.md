@@ -23,14 +23,13 @@ This is a utility bills tracker web application with server-side rendered Jinja2
 - **Backend:** Python 3.12, Flask, SQLite (raw SQL, no ORM)
 - **Templates:** Jinja2 (Flask's built-in templating)
 - **Frontend Interactivity:** HTMX 1.9.10 (loaded from CDN)
-- **Styling:** Vanilla CSS
+- **Styling:** Pico CSS v2 (loaded from CDN)
 - **Production:** Gunicorn, Docker single-stage build
 
 ### Data Flow
 1. Flask renders Jinja2 templates with data from SQLite
 2. Forms submit to Flask routes for processing
 3. HTMX handles dynamic interactions (e.g., delete without page reload)
-4. Flask serves static CSS files from `static/css/`
 
 ### Routes
 ```
@@ -53,8 +52,8 @@ GET    /api/health          - Health check
 ```
 
 ### Templates
-- `templates/base.html` - Base layout with HTML boilerplate, HTMX script, CSS links
-- `templates/bills_list.html` - Bills list view with HTMX delete functionality
+- `templates/base.html` - Base layout with HTML boilerplate, Pico CSS, HTMX script
+- `templates/bills_list.html` - Bills list table with HTMX delete functionality
 - `templates/bill_form.html` - Create/edit form (handles both modes)
 
 ### Database
