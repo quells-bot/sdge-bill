@@ -4,53 +4,58 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Development Commands
 
-### Frontend (run from `frontend/` directory)
-```bash
-npm run dev       # Start Vite dev server at http://0.0.0.0:3000
-npm run build     # Build for production (outputs to dist/)
-npm run lint      # Run ESLint
-npm run preview   # Preview production build
-```
-
 ### Backend
 ```bash
-python backend/app.py  # Start Flask dev server at http://0.0.0.0:5000
+python app.py  # Start Flask dev server at http://0.0.0.0:8000
 ```
 
 ### Docker
 ```bash
 docker build -t utility-bills-tracker .
-docker run -p 5000:5000 -v /data:/data utility-bills-tracker
+docker run -p 8000:8000 -v /data:/data utility-bills-tracker
 ```
 
 ## Architecture
 
-This is a utility bills tracker web application with a React SPA frontend and Flask REST API backend.
+This is a utility bills tracker web application with server-side rendered Jinja2 templates and Flask backend.
 
 ### Tech Stack
-- **Frontend:** React 19, React Router 7, Vite, vanilla CSS
 - **Backend:** Python 3.12, Flask, SQLite (raw SQL, no ORM)
-- **Production:** Gunicorn, Docker multi-stage build
+- **Templates:** Jinja2 (Flask's built-in templating)
+- **Frontend Interactivity:** HTMX 1.9.10 (loaded from CDN)
+- **Styling:** Vanilla CSS
+- **Production:** Gunicorn, Docker single-stage build
 
 ### Data Flow
-1. Frontend dev server proxies `/api/*` requests to backend (configured in `vite.config.js`)
-2. Backend serves REST API at `/api/bills` endpoints
-3. In production, Flask serves the built SPA static files and handles SPA routing fallback
+1. Flask renders Jinja2 templates with data from SQLite
+2. Forms submit to Flask routes for processing
+3. HTMX handles dynamic interactions (e.g., delete without page reload)
+4. Flask serves static CSS files from `static/css/`
 
-### API Endpoints
+### Routes
 ```
+# Template Routes
+GET    /                    - Bills list page
+GET    /add                 - Create bill form
+GET    /edit/<id>           - Edit bill form
+
+# Form Submission Routes
+POST   /bills/create        - Handle create form submission
+POST   /bills/update/<id>   - Handle update form submission
+
+# API Endpoints (used by HTMX and for programmatic access)
 GET    /api/bills           - List all bills (ordered by date DESC)
 GET    /api/bills/<id>      - Get single bill
 POST   /api/bills           - Create bill (date required, others optional)
 PUT    /api/bills/<id>      - Update bill
-DELETE /api/bills/<id>      - Delete bill
+DELETE /api/bills/<id>      - Delete bill (returns empty response for HTMX)
 GET    /api/health          - Health check
 ```
 
-### Frontend Routes
-- `/` - Bills list view (BillsList component)
-- `/add` - New bill form
-- `/edit/:id` - Edit existing bill
+### Templates
+- `templates/base.html` - Base layout with HTML boilerplate, HTMX script, CSS links
+- `templates/bills_list.html` - Bills list view with HTMX delete functionality
+- `templates/bill_form.html` - Create/edit form (handles both modes)
 
 ### Database
 SQLite with a single `bills` table containing cost fields (gas, electricity delivery/generation, other), usage fields (gas therms, electricity kWh by rate tier), and metadata (date which is unique, timestamps).

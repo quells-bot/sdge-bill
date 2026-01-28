@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="form-page">
+  <h1>{% if is_editing %}Edit Bill{% else %}Add Bill{% endif %}</h1>
+
+  <form method="POST" action="{% if is_editing %}/bills/update/{{ bill.id }}{% else %}/bills/create{% endif %}" class="bill-form">
+    {% if error %}
+      <div class="error-message">{{ error }}</div>
+    {% endif %}
+
+    <div class="form-group">
+      <label for="gas_cost">Gas ($)</label>
+      <input
+        type="number"
+        id="gas_cost"
+        name="gas_cost"
+        value="{% if is_editing %}{{ bill.gas_cost or '' }}{% elif form %}{{ form.gas_cost }}{% endif %}"
+        step="0.01"
+        placeholder="0.00"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="electricity_delivery_cost">Electricity Delivery ($)</label>
+      <input
+        type="number"
+        id="electricity_delivery_cost"
+        name="electricity_delivery_cost"
+        value="{% if is_editing %}{{ bill.electricity_delivery_cost or '' }}{% elif form %}{{ form.electricity_delivery_cost }}{% endif %}"
+        step="0.01"
+        placeholder="0.00"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="electricity_generation_cost">Electricity Generation ($)</label>
+      <input
+        type="number"
+        id="electricity_generation_cost"
+        name="electricity_generation_cost"
+        value="{% if is_editing %}{{ bill.electricity_generation_cost or '' }}{% elif form %}{{ form.electricity_generation_cost }}{% endif %}"
+        step="0.01"
+        placeholder="0.00"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="other_cost">Other ($)</label>
+      <input
+        type="number"
+        id="other_cost"
+        name="other_cost"
+        value="{% if is_editing %}{{ bill.other_cost or '' }}{% elif form %}{{ form.other_cost }}{% endif %}"
+        step="0.01"
+        placeholder="0.00"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="gas_therms">Gas (therms)</label>
+      <input
+        type="number"
+        id="gas_therms"
+        name="gas_therms"
+        value="{% if is_editing %}{{ bill.gas_therms or '' }}{% elif form %}{{ form.gas_therms }}{% endif %}"
+        step="0.01"
+        placeholder="0"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="electricity_on_peak_kwh">Electricity On-Peak (kWh)</label>
+      <input
+        type="number"
+        id="electricity_on_peak_kwh"
+        name="electricity_on_peak_kwh"
+        value="{% if is_editing %}{{ bill.electricity_on_peak_kwh or '' }}{% elif form %}{{ form.electricity_on_peak_kwh }}{% endif %}"
+        step="0.01"
+        placeholder="0"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="electricity_off_peak_kwh">Electricity Off-Peak (kWh)</label>
+      <input
+        type="number"
+        id="electricity_off_peak_kwh"
+        name="electricity_off_peak_kwh"
+        value="{% if is_editing %}{{ bill.electricity_off_peak_kwh or '' }}{% elif form %}{{ form.electricity_off_peak_kwh }}{% endif %}"
+        step="0.01"
+        placeholder="0"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="electricity_super_off_peak_kwh">Electricity Super Off-Peak (kWh)</label>
+      <input
+        type="number"
+        id="electricity_super_off_peak_kwh"
+        name="electricity_super_off_peak_kwh"
+        value="{% if is_editing %}{{ bill.electricity_super_off_peak_kwh or '' }}{% elif form %}{{ form.electricity_super_off_peak_kwh }}{% endif %}"
+        step="0.01"
+        placeholder="0"
+      />
+    </div>
+
+    <div class="form-actions">
+      <input
+        type="date"
+        id="date"
+        name="date"
+        value="{% if is_editing %}{{ bill.date }}{% elif form %}{{ form.date }}{% else %}{{ default_date }}{% endif %}"
+        required
+      />
+      <button type="submit" class="btn-save">Save</button>
+    </div>
+  </form>
+</div>
+{% endblock %}
