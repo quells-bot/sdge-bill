@@ -37,18 +37,17 @@ This is a utility bills tracker web application with server-side rendered Jinja2
 GET    /                    - Bills list page
 GET    /add                 - Create bill form
 GET    /edit/<id>           - Edit bill form
+GET    /history             - Usage history page with charts
 
 # Form Submission Routes
 POST   /bills/create        - Handle create form submission
 POST   /bills/update/<id>   - Handle update form submission
 
-# API Endpoints (used by HTMX and for programmatic access)
-GET    /api/bills           - List all bills (ordered by date DESC)
-GET    /api/bills/<id>      - Get single bill
-POST   /api/bills           - Create bill (date required, others optional)
-PUT    /api/bills/<id>      - Update bill
+# API Endpoints (used by HTMX)
 DELETE /api/bills/<id>      - Delete bill (returns empty response for HTMX)
-GET    /api/health          - Health check
+
+# Health Check
+GET    /health              - Health check
 ```
 
 ### Templates
