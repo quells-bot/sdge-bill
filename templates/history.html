@@ -13,6 +13,14 @@
   </ul>
 </nav>
 
+<div style="margin-bottom: 20px;">
+  {% if show_all %}
+    <a href="/history">Show Past Year</a>
+  {% else %}
+    <a href="/history?all=true">Show All Time</a>
+  {% endif %}
+</div>
+
 {% if bills|length == 0 %}
   <article>
     <p>No usage data available yet.</p>

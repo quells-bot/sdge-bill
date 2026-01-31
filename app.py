@@ -181,15 +181,26 @@ def edit_bill(bill_id):
 def history():
     """Render electricity usage history page."""
     db = get_db()
-    # Get last 13 months, then reverse to show chronologically
-    cursor = db.execute("""
-        SELECT date, electricity_on_peak_kwh, electricity_off_peak_kwh,
-               electricity_super_off_peak_kwh, gas_cost, electricity_delivery_cost,
-               electricity_generation_cost, other_cost
-        FROM bills
-        ORDER BY date DESC
-        LIMIT 13
-    """)
+    show_all = request.args.get('all', '').lower() == 'true'
+
+    # Get last 13 months or all entries, then reverse to show chronologically
+    if show_all:
+        cursor = db.execute("""
+            SELECT date, electricity_on_peak_kwh, electricity_off_peak_kwh,
+                   electricity_super_off_peak_kwh, gas_cost, electricity_delivery_cost,
+                   electricity_generation_cost, other_cost
+            FROM bills
+            ORDER BY date DESC
+        """)
+    else:
+        cursor = db.execute("""
+            SELECT date, electricity_on_peak_kwh, electricity_off_peak_kwh,
+                   electricity_super_off_peak_kwh, gas_cost, electricity_delivery_cost,
+                   electricity_generation_cost, other_cost
+            FROM bills
+            ORDER BY date DESC
+            LIMIT 13
+        """)
     bills = [row_to_dict(row) for row in cursor.fetchall()]
     # Reverse to show chronologically (oldest to newest)
     bills.reverse()
@@ -214,7 +225,8 @@ def history():
                          gas_cost=gas_cost,
                          el_delivery_cost=el_delivery_cost,
                          el_generation_cost=el_generation_cost,
-                         other_cost=other_cost)
+                         other_cost=other_cost,
+                         show_all=show_all)
 
 
 # Form Submission Routes
